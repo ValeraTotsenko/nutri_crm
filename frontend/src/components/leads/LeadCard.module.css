@@ -1,0 +1,8 @@
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.nameRow { display: flex; align-items: center; gap: 6px; }
+.stale { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.name { font-size: var(--text-lg); font-weight: 600; color: var(--ink); }
+.interest { font-size: var(--text-sm); color: var(--mid); margin: 4px 0; line-height: 1.4; }
+.meta { display: flex; justify-content: space-between; margin-top: 6px; }
+.contact { font-size: var(--text-xs); color: var(--muted); }
+.source { font-size: var(--text-xs); color: var(--muted); }

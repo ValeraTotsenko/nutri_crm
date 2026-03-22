@@ -1,0 +1,5 @@
+.tabs { display: flex; padding: var(--sp-sm) var(--sp-md); gap: var(--sp-sm); }
+.tab { padding: 6px 16px; border-radius: var(--r-pill); border: 1.5px solid var(--border); font-family: var(--font-ui); font-size: var(--text-sm); font-weight: 600; color: var(--muted); background: transparent; cursor: pointer; }
+.active { border-color: var(--leaf); color: var(--leaf); background: var(--leaf-pale); }
+.list { display: flex; flex-direction: column; gap: var(--sp-sm); padding: 0 var(--sp-md); }
+.empty { text-align: center; color: var(--muted); padding: var(--sp-xl); }

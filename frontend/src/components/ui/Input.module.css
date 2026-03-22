@@ -1,0 +1,20 @@
+.wrap { display: flex; flex-direction: column; gap: 4px; }
+.label { font-size: var(--text-sm); font-weight: 600; color: var(--mid); }
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  color: var(--ink);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input:focus { border-color: var(--leaf); }
+.error { border-color: var(--red); }
+.errorMsg { font-size: var(--text-xs); color: var(--red); }
+.textarea { min-height: 80px; resize: vertical; }
+select.input { cursor: pointer; }

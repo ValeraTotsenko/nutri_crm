@@ -1,0 +1,8 @@
+.header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.title { font-weight: 600; color: var(--ink); line-height: 1.3; }
+.clientName { font-size: var(--text-sm); color: var(--muted); margin-bottom: 8px; }
+.footer { display: flex; justify-content: space-between; align-items: center; }
+.deadline { font-size: var(--text-sm); color: var(--muted); }
+.red { color: var(--red); font-weight: 600; }
+.orange { color: var(--gold); font-weight: 600; }
+.overdueCard { border-color: var(--red) !important; }

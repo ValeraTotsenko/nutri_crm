@@ -1,0 +1,16 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.green { background: var(--leaf-pale); color: var(--leaf); }
+.gold { background: var(--gold-pale); color: var(--gold); }
+.blue { background: var(--blue-pale); color: var(--blue); }
+.red { background: var(--red-pale); color: var(--red); }
+.purple { background: var(--purple-pale); color: var(--purple); }
+.gray { background: var(--border); color: var(--mid); }
+.leaf { background: var(--leaf-pale); color: var(--leaf); }

@@ -1,0 +1,7 @@
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.nameRow { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.name { font-size: var(--text-lg); font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.debtDot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.payment { margin-top: 10px; }
+.meta { display: flex; gap: var(--sp-sm); flex-wrap: wrap; margin-top: 8px; }
+.metaItem { font-size: var(--text-xs); color: var(--muted); }

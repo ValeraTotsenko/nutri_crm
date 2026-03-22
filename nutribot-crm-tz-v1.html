@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriBot CRM — Техническое Задание</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+
+:root{
+  --bg:#0D0F0E;
+  --bg2:#131614;
+  --bg3:#181C1A;
+  --bg4:#1E2421;
+  --line:#2A312D;
+  --line2:#344039;
+  --green:#4CAF72;
+  --green-d:#2D7A4A;
+  --green-l:#A8D9B8;
+  --green-dim:rgba(76,175,114,0.12);
+  --green-dim2:rgba(76,175,114,0.06);
+  --amber:#C8973C;
+  --amber-l:#E8C07A;
+  --amber-dim:rgba(200,151,60,0.12);
+  --blue:#5B8DD4;
+  --blue-l:#9BBFE8;
+  --blue-dim:rgba(91,141,212,0.12);
+  --red:#C45A5A;
+  --red-l:#E89898;
+  --red-dim:rgba(196,90,90,0.12);
+  --purple:#8B6FD4;
+  --purple-l:#BBA8E8;
+  --purple-dim:rgba(139,111,212,0.12);
+  --text:#E8EDE9;
+  --text2:#9EADA5;
+  --text3:#5E6E65;
+  --f-mono:'IBM Plex Mono',monospace;
+  --f-serif:'Fraunces',serif;
+}
+
+body{background:var(--bg);color:var(--text);font-family:var(--f-mono);font-weight:300;overflow-x:hidden;line-height:1.6}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;background:rgba(13,15,14,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:0 48px;display:flex;align-items:center;height:56px;gap:0}
+.nav-brand{font-family:var(--f-serif);font-size:15px;font-weight:600;color:var(--green);margin-right:40px;white-space:nowrap;font-style:italic}
+.nav-links{display:flex;gap:0;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-link{font-size:11px;font-weight:400;letter-spacing:0.06em;color:var(--text3);padding:0 16px;height:56px;display:flex;align-items:center;text-decoration:none;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.nav-link:hover{color:var(--green);border-bottom-color:var(--green-d)}
+.nav-link.active{color:var(--green);border-bottom-color:var(--green)}
+.nav-ver{font-size:10px;color:var(--text3);border:1px solid var(--line2);padding:4px 10px;border-radius:2px;white-space:nowrap;margin-left:auto}
+
+/* LAYOUT */
+.page{max-width:1200px;margin:0 auto;padding:0 48px}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:80px 48px 64px;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;opacity:0.4}
+.hero-glow{position:absolute;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(ellipse,rgba(76,175,114,0.08) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:900px}
+.hero-label{font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);margin-bottom:28px;display:flex;align-items:center;gap:12px}
+.hero-label::before{content:'';width:32px;height:1px;background:var(--green)}
+.hero-h{font-family:var(--f-serif);font-size:clamp(48px,7vw,96px);font-weight:300;line-height:1.02;letter-spacing:-0.02em;color:var(--text);margin-bottom:16px}
+.hero-h em{font-style:italic;color:var(--green)}
+.hero-h strong{font-weight:600}
+.hero-sub{font-size:14px;font-weight:300;line-height:1.85;color:var(--text2);max-width:560px;margin-bottom:48px}
+.hero-meta{display:flex;gap:0;border:1px solid var(--line);width:fit-content}
+.hmeta-item{padding:14px 28px;border-right:1px solid var(--line);font-size:11px}
+.hmeta-item:last-child{border-right:none}
+.hmeta-val{font-family:var(--f-serif);font-size:28px;font-weight:300;color:var(--green);line-height:1;margin-bottom:4px;font-style:italic}
+.hmeta-lbl{color:var(--text3);letter-spacing:0.04em}
+
+/* SECTION */
+section{padding:96px 0;border-bottom:1px solid var(--line)}
+.sec-header{margin-bottom:56px}
+.sec-num{font-size:11px;letter-spacing:0.12em;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec-num::after{content:'';flex:1;height:1px;background:var(--line)}
+.sec-h{font-family:var(--f-serif);font-size:clamp(28px,4vw,48px);font-weight:300;color:var(--text);margin-bottom:14px;letter-spacing:-0.02em}
+.sec-h em{font-style:italic;color:var(--green)}
+.sec-h strong{font-weight:600}
+.sec-desc{font-size:13px;font-weight:300;line-height:1.85;color:var(--text2);max-width:620px}
+
+/* CODE BLOCKS */
+.code-block{background:var(--bg2);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:16px 0}
+.code-header{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:var(--bg3)}
+.code-dots{display:flex;gap:6px}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.cd1{background:#C45A5A}.cd2{background:#C8973C}.cd3{background:#4CAF72}
+.code-title{font-size:11px;color:var(--text3);margin-left:4px;letter-spacing:0.04em}
+.code-body{padding:20px;font-size:12px;line-height:1.9;overflow-x:auto}
+.ck{color:var(--blue-l)} /* key */
+.cv{color:var(--green)} /* value string */
+.cn{color:var(--amber-l)} /* number */
+.cb{color:var(--purple-l)} /* boolean */
+.cc{color:var(--text3);font-style:italic} /* comment */
+.ct{color:var(--text2)} /* type */
+.ce{color:var(--red-l)} /* enum */
+
+/* ENTITY CARDS */
+.entity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.entity-card{background:var(--bg2);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.entity-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
+.entity-name{font-family:var(--f-serif);font-size:16px;font-weight:600;color:var(--text);font-style:italic}
+.entity-tag{font-size:10px;letter-spacing:0.08em;padding:3px 10px;border-radius:2px;font-weight:400}
+.tag-db{background:var(--blue-dim);color:var(--blue-l);border:1px solid rgba(91,141,212,0.2)}
+.tag-calc{background:var(--amber-dim);color:var(--amber-l);border:1px solid rgba(200,151,60,0.2)}
+.tag-rel{background:var(--purple-dim);color:var(--purple-l);border:1px solid rgba(139,111,212,0.2)}
+.entity-body{padding:0}
+.field-row{padding:10px 20px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;font-size:12px;transition:background 0.15s}
+.field-row:last-child{border-bottom:none}
+.field-row:hover{background:var(--bg3)}
+.field-name{color:var(--green-l);min-width:180px;flex-shrink:0}
+.field-type{color:var(--blue-l);min-width:120px;flex-shrink:0}
+.field-note{color:var(--text3);font-size:11px;line-height:1.5}
+.field-req{color:var(--red-l);font-size:10px;flex-shrink:0}
+
+/* NOTIF CARDS */
+.notif-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:32px}
+.notif-card{border:1px solid var(--line);border-radius:4px;overflow:hidden;transition:border-color 0.2s}
+.notif-card:hover{border-color:var(--line2)}
+.nc-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.nc-title{font-size:13px;font-weight:500;color:var(--text)}
+.nc-type{font-size:10px;letter-spacing:0.06em;padding:2px 8px;border-radius:2px}
+.nct-client{background:var(--green-dim);color:var(--green-l);border:1px solid rgba(76,175,114,0.2)}
+.nct-finance{background:var(--amber-dim);color:var(--amber-l);border:1px solid rgba(200,151,60,0.2)}
+.nct-lead{background:var(--blue-dim);color:var(--blue-l);border:1px solid rgba(91,141,212,0.2)}
+.nct-system{background:var(--purple-dim);color:var(--purple-l);border:1px solid rgba(139,111,212,0.2)}
+.nc-body{padding:16px 18px}
+.nc-trigger{font-size:11px;color:var(--text3);margin-bottom:10px;display:flex;align-items:flex-start;gap:8px}
+.nc-trigger::before{content:'⚡';flex-shrink:0}
+.nc-msg{background:var(--bg3);border:1px solid var(--line);border-radius:4px;padding:12px;font-size:12px;line-height:1.8;color:var(--text2);margin-bottom:10px}
+.nc-msg strong{color:var(--text);font-weight:500}
+.nc-btns{display:flex;gap:6px;flex-wrap:wrap}
+.nc-btn{font-size:10px;padding:4px 10px;border-radius:2px;border:1px solid var(--line2);color:var(--text2);cursor:pointer;transition:all 0.2s;background:transparent;font-family:var(--f-mono)}
+.nc-btn:hover{border-color:var(--green);color:var(--green)}
+.nc-btn.primary{border-color:var(--green-d);color:var(--green);background:var(--green-dim)}
+.nc-schedule{font-size:10px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;align-items:center;gap:6px}
+.nc-schedule::before{content:'🕐'}
+
+/* STATUS FLOW */
+.status-flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:24px 0}
+.sf-item{display:flex;align-items:center}
+.sf-node{padding:8px 18px;border-radius:2px;font-size:12px;font-weight:400;border:1px solid;transition:all 0.3s;cursor:default}
+.sf-arr{font-size:16px;color:var(--text3);padding:0 8px;flex-shrink:0}
+.sf-green{background:var(--green-dim);color:var(--green-l);border-color:rgba(76,175,114,0.3)}
+.sf-amber{background:var(--amber-dim);color:var(--amber-l);border-color:rgba(200,151,60,0.3)}
+.sf-blue{background:var(--blue-dim);color:var(--blue-l);border-color:rgba(91,141,212,0.3)}
+.sf-red{background:var(--red-dim);color:var(--red-l);border-color:rgba(196,90,90,0.3)}
+.sf-gray{background:var(--bg3);color:var(--text3);border-color:var(--line)}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:32px;margin-top:24px}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(180deg,var(--green),var(--line))}
+.tl-item{position:relative;margin-bottom:32px}
+.tl-item::before{content:'';position:absolute;left:-37px;top:5px;width:10px;height:10px;border-radius:50%;border:1px solid var(--green);background:var(--bg)}
+.tl-item.done::before{background:var(--green)}
+.tl-month{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.tl-title{font-size:14px;font-weight:400;color:var(--text);margin-bottom:6px}
+.tl-desc{font-size:12px;color:var(--text3);line-height:1.7}
+.tl-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tl-tag{font-size:10px;padding:2px 8px;border-radius:2px;background:var(--bg3);color:var(--text3);border:1px solid var(--line)}
+
+/* TABLE */
+.spec-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:20px}
+.spec-table th{padding:10px 16px;text-align:left;border-bottom:1px solid var(--line);color:var(--text3);font-weight:400;letter-spacing:0.06em;text-transform:uppercase;font-size:10px;background:var(--bg3)}
+.spec-table td{padding:10px 16px;border-bottom:1px solid var(--line);color:var(--text2);vertical-align:top;line-height:1.6}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table tr:hover td{background:var(--bg2)}
+.spec-table td:first-child{color:var(--green-l);font-weight:400}
+.td-tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:2px;margin-right:4px}
+.tdt-r{background:var(--red-dim);color:var(--red-l)}
+.tdt-o{background:var(--amber-dim);color:var(--amber-l)}
+.tdt-g{background:var(--green-dim);color:var(--green-l)}
+
+/* LOGIC BOXES */
+.logic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.logic-box{background:var(--bg2);border:1px solid var(--line);border-radius:4px;padding:20px}
+.lb-icon{font-size:20px;margin-bottom:12px}
+.lb-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px}
+.lb-body{font-size:12px;color:var(--text2);line-height:1.75}
+.lb-rule{background:var(--bg3);border-left:2px solid var(--green-d);padding:8px 12px;margin-top:10px;font-size:11px;color:var(--text3);font-style:italic;line-height:1.6}
+
+/* DESIGN TOKENS */
+.tokens-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+.token-card{border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.token-swatch{height:56px}
+.token-info{padding:10px 12px;background:var(--bg2)}
+.token-name{font-size:11px;color:var(--green-l);margin-bottom:2px}
+.token-hex{font-size:10px;color:var(--text3)}
+
+.col-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.col-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+
+/* INLINE TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:2px;font-weight:400}
+.tag-green{background:var(--green-dim);color:var(--green-l);border:1px solid rgba(76,175,114,0.2)}
+.tag-amber{background:var(--amber-dim);color:var(--amber-l);border:1px solid rgba(200,151,60,0.2)}
+.tag-blue{background:var(--blue-dim);color:var(--blue-l);border:1px solid rgba(91,141,212,0.2)}
+.tag-red{background:var(--red-dim);color:var(--red-l);border:1px solid rgba(196,90,90,0.2)}
+.tag-purple{background:var(--purple-dim);color:var(--purple-l);border:1px solid rgba(139,111,212,0.2)}
+
+/* CALLOUT */
+.callout{border:1px solid;border-radius:4px;padding:16px 20px;margin:20px 0;font-size:13px;line-height:1.75}
+.callout-green{border-color:rgba(76,175,114,0.3);background:var(--green-dim2);color:var(--green-l)}
+.callout-amber{border-color:rgba(200,151,60,0.3);background:var(--amber-dim);color:var(--amber-l)}
+.callout-blue{border-color:rgba(91,141,212,0.3);background:var(--blue-dim);color:var(--blue-l)}
+.callout strong{font-weight:500}
+
+/* LIST */
+.spec-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.spec-list li{font-size:13px;color:var(--text2);padding-left:20px;position:relative;line-height:1.65}
+.spec-list li::before{content:'→';position:absolute;left:0;color:var(--green-d)}
+.spec-list.tight li{font-size:12px;gap:5px}
+
+/* SCREEN MOCKUP */
+.screen-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:24px}
+.screen-bar{background:var(--bg3);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.screen-dot{width:8px;height:8px;border-radius:50%}
+.screen-title{font-size:11px;color:var(--text3);margin-left:4px}
+.screen-body{padding:24px}
+
+/* ARCH DIAGRAM */
+.arch-box{border:1px solid var(--line);border-radius:4px;padding:16px;background:var(--bg2);text-align:center}
+.arch-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
+.arch-sub{font-size:11px;color:var(--text3)}
+.arch-tag{font-size:10px;padding:2px 7px;border-radius:2px;margin-top:8px;display:inline-block}
+.arch-grid{display:grid;gap:16px;margin-top:24px}
+.arch-arrow{text-align:center;color:var(--green-d);font-size:20px;padding:4px 0}
+.arch-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.arch-row-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+
+/* SCROLLSPY PROGRESS */
+.progress-bar-top{position:fixed;top:56px;left:0;right:0;height:2px;background:var(--line);z-index:200}
+.progress-fill{height:100%;background:var(--green);width:0%;transition:width 0.1s}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.show{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-20px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal-l.show{opacity:1;transform:translateX(0)}
+
+/* TYPE PILLS */
+.type-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.type-pill{padding:8px 16px;border:1px solid var(--line);border-radius:2px;font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.type-pill:hover{border-color:var(--green);color:var(--green)}
+.type-pill.sel{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+
+@media(max-width:900px){
+  nav{padding:0 16px}
+  .page{padding:0 16px}
+  .hero{padding:80px 16px 48px}
+  .entity-grid,.notif-grid,.logic-grid,.tokens-grid,.col-grid,.col-grid-3,.arch-row,.arch-row-2{grid-template-columns:1fr}
+  .hmeta-item{padding:12px 18px}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar-top"><div class="progress-fill" id="prog"></div></div>
+
+<nav>
+  <div class="nav-brand">NutriBot</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#overview">Обзор</a>
+    <a class="nav-link" href="#architecture">Архитектура</a>
+    <a class="nav-link" href="#entities">Сущности</a>
+    <a class="nav-link" href="#client-types">Типы работы</a>
+    <a class="nav-link" href="#call-logic">Созвоны</a>
+    <a class="nav-link" href="#leads">Лиды</a>
+    <a class="nav-link" href="#notifications">Уведомления</a>
+    <a class="nav-link" href="#design">Дизайн</a>
+    <a class="nav-link" href="#roadmap">Роадмап</a>
+  </div>
+  <div class="nav-ver">ТЗ v1.0 · 2025</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero" id="top">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-label">Техническое задание · NutriBot CRM</div>
+    <h1 class="hero-h">
+      CRM-система<br>
+      для <em>нутрициолога</em><br>
+      <strong>в Telegram</strong>
+    </h1>
+    <p class="hero-sub">Полная спецификация: структура данных, бизнес-логика, система уведомлений, воронка лидов, созвоны и дизайн-система. Документ передаётся команде разработки.</p>
+    <div class="hero-meta">
+      <div class="hmeta-item"><div class="hmeta-val">3</div><div class="hmeta-lbl">основных модуля</div></div>
+      <div class="hmeta-item"><div class="hmeta-val">11</div><div class="hmeta-lbl">типов уведомлений</div></div>
+      <div class="hmeta-item"><div class="hmeta-val">6</div><div class="hmeta-lbl">типов работы</div></div>
+      <div class="hmeta-item"><div class="hmeta-val">MVP<br><span style="font-size:14px">2 нед</span></div><div class="hmeta-lbl">до первого релиза</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 1. ОБЗОР ═══ -->
+<section id="overview">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">01 — Обзор проекта</div>
+    <h2 class="sec-h">Что строим <em>и зачем</em></h2>
+    <p class="sec-desc">Telegram Mini App + бот для ведения практики нутрициолога. Система заменяет ассистента в рутинных задачах: учёт клиентов, контроль оплат, управление задачами, воронка лидов и умные уведомления.</p>
+  </div>
+
+  <div class="col-grid reveal">
+    <div>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div><div class="code-title">project.config</div></div>
+        <div class="code-body">
+<span class="cc">// Стек технологий</span><br>
+{<br>
+&nbsp;&nbsp;<span class="ck">platform</span>: <span class="cv">"Telegram Mini App"</span>,<br>
+&nbsp;&nbsp;<span class="ck">frontend</span>: <span class="cv">"React + Vite"</span>,<br>
+&nbsp;&nbsp;<span class="ck">backend</span>: <span class="cv">"Node.js (Fastify)"</span>,<br>
+&nbsp;&nbsp;<span class="ck">database</span>: <span class="cv">"PostgreSQL"</span>,<br>
+&nbsp;&nbsp;<span class="ck">scheduler</span>: <span class="cv">"node-cron / BullMQ"</span>,<br>
+&nbsp;&nbsp;<span class="ck">bot</span>: <span class="cv">"node-telegram-bot-api"</span>,<br>
+&nbsp;&nbsp;<span class="ck">deploy</span>: <span class="cv">"Railway / Render"</span>,<br>
+&nbsp;&nbsp;<span class="ck">timezone</span>: <span class="cv">"Europe/Kyiv"</span>,<br>
+&nbsp;&nbsp;<span class="ck">notifications_time</span>: <span class="cv">"10:00"</span>,<br>
+&nbsp;&nbsp;<span class="ck">notifications_days</span>: <span class="cv">"Mon–Fri"</span><br>
+}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="callout callout-green"><strong>Пользователь системы:</strong> один (нутрициолог-владелец). Никакого публичного доступа — всё закрыто на Telegram ID владельца.</div>
+        <div class="callout callout-amber"><strong>Уведомления:</strong> только владельцу в личку бота. Пн–Пт в 10:00. Срочные события (день рождения, созвон завтра) — вне зависимости от расписания.</div>
+        <div class="callout callout-blue"><strong>Расширяемость:</strong> структура БД и архитектура спроектированы с запасом — поля, типы уведомлений и логика добавляются без переделки ядра.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ 2. АРХИТЕКТУРА ═══ -->
+<section id="architecture">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">02 — Архитектура</div>
+    <h2 class="sec-h">Системная <em>схема</em></h2>
+    <p class="sec-desc">Три слоя: интерфейс (Mini App), логика (Backend API), данные (PostgreSQL + планировщик). Бот — отдельный процесс для отправки уведомлений.</p>
+  </div>
+
+  <div class="arch-grid reveal">
+    <div class="arch-row-2">
+      <div class="arch-box" style="border-color:rgba(139,111,212,0.4);background:var(--purple-dim)">
+        <div class="arch-label" style="color:var(--purple-l)">📱 Telegram Mini App</div>
+        <div class="arch-sub">React + Vite · Telegram WebApp SDK<br>Открывается внутри Telegram, адаптирован под телефон</div>
+        <div class="arch-tag" style="background:var(--purple-dim);color:var(--purple-l);border:1px solid rgba(139,111,212,0.3)">Frontend</div>
+      </div>
+      <div class="arch-box" style="border-color:rgba(91,141,212,0.4);background:var(--blue-dim)">
+        <div class="arch-label" style="color:var(--blue-l)">🤖 Telegram Bot</div>
+        <div class="arch-sub">node-telegram-bot-api<br>Отправляет уведомления владельцу, принимает команды /start</div>
+        <div class="arch-tag" style="background:var(--blue-dim);color:var(--blue-l);border:1px solid rgba(91,141,212,0.3)">Notifications</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↕ REST API / Webhook</div>
+    <div class="arch-row">
+      <div class="arch-box" style="border-color:rgba(76,175,114,0.4);background:var(--green-dim)">
+        <div class="arch-label" style="color:var(--green-l)">⚙️ Backend API</div>
+        <div class="arch-sub">Node.js + Fastify<br>CRUD клиентов, лидов, задач, оплат<br>JWT авторизация по Telegram ID</div>
+        <div class="arch-tag" style="background:var(--green-dim);color:var(--green-l);border:1px solid rgba(76,175,114,0.3)">Core Logic</div>
+      </div>
+      <div class="arch-box" style="border-color:rgba(200,151,60,0.4);background:var(--amber-dim)">
+        <div class="arch-label" style="color:var(--amber-l)">⏰ Scheduler</div>
+        <div class="arch-sub">node-cron (или BullMQ)<br>Запуск ежедневно в 10:00 Пн–Пт<br>Проверка дедлайнов, платежей, ДР, лидов</div>
+        <div class="arch-tag" style="background:var(--amber-dim);color:var(--amber-l);border:1px solid rgba(200,151,60,0.3)">Cron Jobs</div>
+      </div>
+      <div class="arch-box" style="border-color:rgba(196,90,90,0.4);background:var(--red-dim)">
+        <div class="arch-label" style="color:var(--red-l)">🗄️ PostgreSQL</div>
+        <div class="arch-sub">Основная БД<br>Clients, Leads, Tasks, Payments<br>Calls, Notifications log</div>
+        <div class="arch-tag" style="background:var(--red-dim);color:var(--red-l);border:1px solid rgba(196,90,90,0.3)">Database</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-green reveal" style="margin-top:32px">
+    <strong>Авторизация:</strong> Бот при старте сохраняет Telegram ID владельца. Все запросы к API проверяют initData из Telegram WebApp SDK — дополнительная авторизация не нужна. Система доступна только одному пользователю.
+  </div>
+</div>
+</section>
+
+<!-- ═══ 3. СУЩНОСТИ БД ═══ -->
+<section id="entities">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">03 — Структура данных</div>
+    <h2 class="sec-h">Сущности <em>базы данных</em></h2>
+    <p class="sec-desc">Полная схема всех таблиц с типами полей, обязательностью и пояснениями. Жирным — новые поля по фидбеку.</p>
+  </div>
+
+  <!-- CLIENT -->
+  <div class="entity-card reveal" style="margin-bottom:20px">
+    <div class="entity-head">
+      <div class="entity-name">clients</div>
+      <div style="display:flex;gap:8px"><span class="entity-tag tag-db">Основная таблица</span></div>
+    </div>
+    <div class="entity-body">
+      <div class="field-row"><span class="field-name">id</span><span class="field-type">UUID</span><span class="field-note">Primary key, генерируется автоматически</span><span class="field-req">PK</span></div>
+      <div class="field-row" style="background:var(--green-dim2)"><span class="field-name" style="color:var(--green)">last_name</span><span class="field-type">VARCHAR(100)</span><span class="field-note" style="color:var(--green-l)">★ Фамилия — новое поле</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">first_name</span><span class="field-type">VARCHAR(100)</span><span class="field-note">Имя клиента</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row" style="background:var(--green-dim2)"><span class="field-name" style="color:var(--green)">birth_date</span><span class="field-type">DATE</span><span class="field-note" style="color:var(--green-l)">★ Дата рождения — триггер ДР-уведомления</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">phone</span><span class="field-type">VARCHAR(20)</span><span class="field-note">Телефон или @username в TG</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">telegram_username</span><span class="field-type">VARCHAR(50)</span><span class="field-note">@username в Telegram без @</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row" style="background:var(--green-dim2)"><span class="field-name" style="color:var(--green)">work_type</span><span class="field-type">ENUM</span><span class="field-note" style="color:var(--green-l)">★ Тип работы (см. раздел 04). Определяет логику созвонов и уведомлений</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">goal</span><span class="field-type">TEXT</span><span class="field-note">Цель клиента (снижение веса, набор массы, и т.д.)</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">start_date</span><span class="field-type">DATE</span><span class="field-note">Дата начала работы</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">end_date</span><span class="field-type">DATE</span><span class="field-note">Дата окончания текущего периода. Вычисляется или вводится вручную</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">active | paused | completed | extended</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">contraindications</span><span class="field-type">TEXT</span><span class="field-note">Противопоказания и особенности здоровья</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">notes</span><span class="field-type">TEXT</span><span class="field-note">Произвольные заметки нутрициолога</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">source_lead_id</span><span class="field-type">UUID → leads</span><span class="field-note">FK: если клиент пришёл через воронку лидов</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">created_at / updated_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Автоматически</span><span class="field-req"></span></div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div class="entity-grid reveal">
+    <div class="entity-card">
+      <div class="entity-head">
+        <div class="entity-name">payments</div>
+        <span class="entity-tag tag-db">Оплаты</span>
+      </div>
+      <div class="entity-body">
+        <div class="field-row"><span class="field-name">id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+        <div class="field-row"><span class="field-name">client_id</span><span class="field-type">UUID → clients</span><span class="field-note">FK</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">total_amount</span><span class="field-type">DECIMAL(10,2)</span><span class="field-note">Сумма договора</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">paid_amount</span><span class="field-type">DECIMAL(10,2)</span><span class="field-note">Оплачено (сумма всех платежей)</span><span class="field-req" style="color:var(--amber-l)">CALC</span></div>
+        <div class="field-row" style="background:var(--green-dim2)"><span class="field-name" style="color:var(--green)">next_payment_date</span><span class="field-type">DATE</span><span class="field-note" style="color:var(--green-l)">★ Дата след. платежа — уведомление за 2 дня</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+        <div class="field-row" style="background:var(--green-dim2)"><span class="field-name" style="color:var(--green)">overdue_days_threshold</span><span class="field-type">INT</span><span class="field-note" style="color:var(--green-l)">★ Через сколько дней после дедлайна слать «не доплатил». По умолчанию: 2</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+        <div class="field-row"><span class="field-name">currency</span><span class="field-type">VARCHAR(3)</span><span class="field-note">UAH / USD / EUR. Default: UAH</span></div>
+        <div class="field-row"><span class="field-name">notes</span><span class="field-type">TEXT</span><span class="field-note">Заметки по оплате</span></div>
+      </div>
+    </div>
+    <div class="entity-card">
+      <div class="entity-head">
+        <div class="entity-name">payment_transactions</div>
+        <span class="entity-tag tag-db">История платежей</span>
+      </div>
+      <div class="entity-body">
+        <div class="field-row"><span class="field-name">id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+        <div class="field-row"><span class="field-name">payment_id</span><span class="field-type">UUID → payments</span><span class="field-note">FK</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">amount</span><span class="field-type">DECIMAL(10,2)</span><span class="field-note">Сумма конкретного платежа</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">paid_at</span><span class="field-type">DATE</span><span class="field-note">Дата платежа</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">method</span><span class="field-type">VARCHAR(50)</span><span class="field-note">Карта / нал / Monobank / иное</span></div>
+        <div class="field-row"><span class="field-name">note</span><span class="field-type">TEXT</span><span class="field-note">Комментарий к платежу</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Автоматически</span></div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="entity-card">
+      <div class="entity-head">
+        <div class="entity-name">tasks</div>
+        <span class="entity-tag tag-db">Задачи</span>
+      </div>
+      <div class="entity-body">
+        <div class="field-row"><span class="field-name">id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+        <div class="field-row"><span class="field-name">client_id</span><span class="field-type">UUID → clients</span><span class="field-note">FK</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">title</span><span class="field-type">VARCHAR(255)</span><span class="field-note">Название задачи</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">deadline_date</span><span class="field-type">DATE</span><span class="field-note">Дедлайн задачи</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+        <div class="field-row" style="background:var(--green-dim2)"><span class="field-name" style="color:var(--green)">remind_days_before</span><span class="field-type">INT</span><span class="field-note" style="color:var(--green-l)">★ За сколько дней напомнить. Задаётся для каждой задачи отдельно. Default: 1</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+        <div class="field-row"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">pending | in_progress | done | overdue</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">priority</span><span class="field-type">ENUM</span><span class="field-note">low | medium | high</span></div>
+        <div class="field-row"><span class="field-name">notes</span><span class="field-type">TEXT</span><span class="field-note">Описание задачи</span></div>
+        <div class="field-row"><span class="field-name">completed_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Когда закрыта</span></div>
+      </div>
+    </div>
+
+    <!-- CALLS -->
+    <div class="entity-card">
+      <div class="entity-head">
+        <div class="entity-name">calls</div>
+        <span class="entity-tag tag-db">★ Созвоны</span>
+      </div>
+      <div class="entity-body">
+        <div class="field-row"><span class="field-name">id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+        <div class="field-row"><span class="field-name">client_id</span><span class="field-type">UUID → clients</span><span class="field-note">FK (NULL если lead)</span><span class="field-req" style="color:var(--red-l)">REQ*</span></div>
+        <div class="field-row"><span class="field-name">lead_id</span><span class="field-type">UUID → leads</span><span class="field-note">FK (для бесплатной диагностики лида)</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+        <div class="field-row"><span class="field-name">scheduled_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Дата и время созвона (с учётом timezone)</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">call_type</span><span class="field-type">ENUM</span><span class="field-note">intro | monthly | extra | free_diagnostic</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+        <div class="field-row"><span class="field-name">duration_min</span><span class="field-type">INT</span><span class="field-note">Длительность в мин. Default 30 для диагностики, 60 для сопровождения</span></div>
+        <div class="field-row"><span class="field-name">platform</span><span class="field-type">VARCHAR(50)</span><span class="field-note">Zoom / Google Meet / Telegram / другое</span></div>
+        <div class="field-row"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">scheduled | done | cancelled | no_show</span></div>
+        <div class="field-row"><span class="field-name">notes</span><span class="field-type">TEXT</span><span class="field-note">Заметки после созвона</span></div>
+        <div class="field-row"><span class="field-name">created_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Автоматически</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADS -->
+  <div class="entity-card reveal" style="margin-top:20px">
+    <div class="entity-head">
+      <div class="entity-name">leads</div>
+      <div style="display:flex;gap:8px"><span class="entity-tag tag-db">Лиды / потенциальные клиенты</span></div>
+    </div>
+    <div class="entity-body">
+      <div class="field-row"><span class="field-name">id</span><span class="field-type">UUID</span><span class="field-note">PK</span></div>
+      <div class="field-row"><span class="field-name">last_name</span><span class="field-type">VARCHAR(100)</span><span class="field-note">Фамилия</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">first_name</span><span class="field-type">VARCHAR(100)</span><span class="field-note">Имя</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">telegram_username</span><span class="field-type">VARCHAR(50)</span><span class="field-note">@username</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">phone</span><span class="field-type">VARCHAR(20)</span><span class="field-note">Телефон</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">status</span><span class="field-type">ENUM</span><span class="field-note">new | warm | negotiations | refused | club_member. Подробнее — раздел 06</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">interest</span><span class="field-type">TEXT</span><span class="field-note">Чем интересовался, что спрашивал</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">source</span><span class="field-type">VARCHAR(100)</span><span class="field-note">Откуда пришёл: Instagram, рекомендация, сайт, другое</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">referred_by_client_id</span><span class="field-type">UUID → clients</span><span class="field-note">Кто из клиентов рекомендовал</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">last_contact_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Дата последнего контакта. Обновляется вручную нажатием «Написала»</span><span class="field-req" style="color:var(--red-l)">REQ</span></div>
+      <div class="field-row"><span class="field-name">remind_after_days</span><span class="field-type">INT</span><span class="field-note">Через сколько дней напомнить снова. Default: 7</span></div>
+      <div class="field-row"><span class="field-name">had_free_diagnostic</span><span class="field-type">BOOLEAN</span><span class="field-note">Записался / прошёл бесплатную диагностику</span></div>
+      <div class="field-row"><span class="field-name">diagnostic_call_id</span><span class="field-type">UUID → calls</span><span class="field-note">Ссылка на созвон-диагностику</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">converted_to_client_id</span><span class="field-type">UUID → clients</span><span class="field-note">Заполняется при конвертации в клиента</span><span class="field-req" style="color:var(--amber-l)">OPT</span></div>
+      <div class="field-row"><span class="field-name">notes</span><span class="field-type">TEXT</span><span class="field-note">Заметки по лиду</span></div>
+      <div class="field-row"><span class="field-name">created_at / updated_at</span><span class="field-type">TIMESTAMP</span><span class="field-note">Автоматически</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ 4. ТИПЫ РАБОТЫ ═══ -->
+<section id="client-types">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">04 — Типы работы с клиентом</div>
+    <h2 class="sec-h">6 форматов — <em>разная логика</em></h2>
+    <p class="sec-desc">Тип работы определяет: нужны ли созвоны, сколько их, на какой срок рассчитана работа и какие уведомления генерировать.</p>
+  </div>
+
+  <table class="spec-table reveal">
+    <thead>
+      <tr>
+        <th>Тип работы</th>
+        <th>Срок</th>
+        <th>Созвоны</th>
+        <th>Продление</th>
+        <th>Особенности</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-green">individual</span><br>Индивидуальное сопровождение</td>
+        <td>3 мес, продлевается</td>
+        <td>Вводный + конец 1-го мес + 1–2/мес далее</td>
+        <td>+1, +2 мес и т.д.</td>
+        <td>Основной продукт. Полный цикл уведомлений</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-green">family</span><br>Семейное сопровождение</td>
+        <td>3 мес, продлевается</td>
+        <td>Аналогично индивидуальному</td>
+        <td>+1, +2 мес и т.д.</td>
+        <td>Несколько членов семьи, одна карточка клиента</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">pregnancy_planning</span><br>Планирование беременности</td>
+        <td>3 мес, продлевается</td>
+        <td>Аналогично сопровождению</td>
+        <td>Да</td>
+        <td>Особые противопоказания в карточке</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">pregnancy_support</span><br>Сопровождение беременности</td>
+        <td>3 мес, продлевается</td>
+        <td>Аналогично сопровождению</td>
+        <td>Да</td>
+        <td>Срок беременности в заметках</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">express</span><br>Экспресс</td>
+        <td>Фиксированный (1 мес)</td>
+        <td>1 созвон (первый)</td>
+        <td>→ схема на 3 мес</td>
+        <td>После завершения может перейти на схему_3m без созвонов</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-amber">scheme_3m</span><br>Повторная схема на 3 мес</td>
+        <td>3 мес</td>
+        <td>Иногда 1 созвон (не всегда)</td>
+        <td>Ещё одна схема</td>
+        <td>Для тех, кто прошёл 3+ мес сопровождения или экспресс. Флаг has_call в карточке</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-amber reveal" style="margin-top:24px">
+    <strong>Логика «Повторной схемы»:</strong> Схема на 3 мес без сопровождения доступна только после завершения минимум 3 мес сопровождения (individual / family / pregnancy_*) ИЛИ после экспресса. В карточке клиента — поле <code>has_call: boolean</code> (нужен ли созвон для конкретного клиента на схеме).
+  </div>
+</div>
+</section>
+
+<!-- ═══ 5. ЛОГИКА СОЗВОНОВ ═══ -->
+<section id="call-logic">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">05 — Логика созвонов</div>
+    <h2 class="sec-h">Когда и какой <em>созвон</em></h2>
+    <p class="sec-desc">Созвоны хранятся в таблице calls. Каждый созвон — отдельная запись с датой, типом и статусом. Уведомление — за 1 день до созвона.</p>
+  </div>
+
+  <div class="col-grid reveal">
+    <div>
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Типы созвонов (call_type)</div>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div><div class="code-title">call_types.enum</div></div>
+        <div class="code-body">
+<span class="ce">intro</span>         <span class="cc">// Вводный — первый созвон. Всегда для сопровождений.</span><br>
+                 <span class="cc">// Для экспресса — тоже первый и единственный.</span><br>
+                 <span class="cc">// Для схемы_3м — только если has_call = true</span><br><br>
+<span class="ce">monthly</span>       <span class="cc">// Конец 1-го мес сопровождения. Плановый.</span><br>
+                 <span class="cc">// Далее — 1–2 в месяц по договорённости.</span><br><br>
+<span class="ce">extra</span>         <span class="cc">// Внеплановый созвон (по необходимости)</span><br><br>
+<span class="ce">free_diagnostic</span> <span class="cc">// Бесплатная диагностика лида (30 мин).</span><br>
+                 <span class="cc">// Привязывается к leads, не к clients.</span><br>
+                 <span class="cc">// После — лид меняет статус.</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">График созвонов на сопровождении (3 мес)</div>
+      <div class="timeline">
+        <div class="tl-item done">
+          <div class="tl-month">День 1 — Старт</div>
+          <div class="tl-title">Вводный созвон (intro)</div>
+          <div class="tl-desc">Знакомство, сбор анамнеза, постановка целей. Создаётся при добавлении клиента.</div>
+          <div class="tl-tags"><span class="tl-tag">call_type: intro</span><span class="tl-tag">~60 мин</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-month">~30 день — Конец 1-го месяца</div>
+          <div class="tl-title">Плановый созвон (monthly)</div>
+          <div class="tl-desc">Разбор первого месяца работы, корректировка плана. Нутрициолог создаёт вручную.</div>
+          <div class="tl-tags"><span class="tl-tag">call_type: monthly</span><span class="tl-tag">~60 мин</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-month">Месяц 2–3 — По договорённости</div>
+          <div class="tl-title">1–2 созвона в месяц</div>
+          <div class="tl-desc">Создаются по мере договорённости с клиентом. Тип: monthly или extra.</div>
+          <div class="tl-tags"><span class="tl-tag">call_type: monthly / extra</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-month">После 3+ мес — Опционально</div>
+          <div class="tl-title">Продление или переход на схему</div>
+          <div class="tl-desc">Продление сопровождения (+1 мес) или переход на схему_3м без созвонов (если has_call = false).</div>
+          <div class="tl-tags"><span class="tl-tag">status: extended</span><span class="tl-tag">work_type → scheme_3m</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-blue reveal" style="margin-top:32px">
+    <strong>Важно:</strong> Нутрициолог создаёт созвоны вручную в Mini App (дата + время + тип). Система не генерирует их автоматически — только напоминает о запланированных. Уведомление приходит за 1 день в 10:00, если созвон на следующий день.
+  </div>
+</div>
+</section>
+
+<!-- ═══ 6. ЛИДЫ ═══ -->
+<section id="leads">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">06 — Воронка лидов</div>
+    <h2 class="sec-h">Статусы, логика <em>переходов</em></h2>
+    <p class="sec-desc">Полная логика работы с потенциальными клиентами: от первого контакта до конвертации или отказа.</p>
+  </div>
+
+  <div class="reveal">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Воронка статусов лида</div>
+    <div class="status-flow">
+      <div class="sf-item"><div class="sf-node sf-gray">new<br><span style="font-size:10px;opacity:0.7">Новый</span></div><div class="sf-arr">→</div></div>
+      <div class="sf-item"><div class="sf-node sf-amber">warm<br><span style="font-size:10px;opacity:0.7">Тёплый</span></div><div class="sf-arr">→</div></div>
+      <div class="sf-item"><div class="sf-node sf-blue">negotiations<br><span style="font-size:10px;opacity:0.7">Переговоры</span></div><div class="sf-arr">→</div></div>
+      <div class="sf-item"><div class="sf-node sf-green">✓ CLIENT<br><span style="font-size:10px;opacity:0.7">Стал клиентом</span></div></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+      <div class="sf-node sf-blue" style="font-size:11px">club_member — купил закрытый клуб</div>
+      <div class="sf-arr" style="line-height:2">→ остаётся тёплым лидом</div>
+      <div class="sf-node sf-red" style="font-size:11px">refused — не отвечает</div>
+    </div>
+  </div>
+
+  <div class="logic-grid reveal" style="margin-top:32px">
+    <div class="logic-box">
+      <div class="lb-icon">🎯</div>
+      <div class="lb-title">Бесплатная диагностика</div>
+      <div class="lb-body">Лид записывается на БД — создаётся запись в <code>calls</code> с типом <code>free_diagnostic</code>. Флаг <code>had_free_diagnostic = true</code>. Уведомление за 1 день до созвона.</div>
+      <div class="lb-rule">После БД нутрициолог вручную меняет статус лида</div>
+    </div>
+    <div class="logic-box">
+      <div class="lb-icon">✅</div>
+      <div class="lb-title">Вошёл в работу</div>
+      <div class="lb-body">После БД лид заключил договор → кнопка «Перевести в клиента». Создаётся запись в <code>clients</code>, <code>source_lead_id</code> ставится, лид закрывается. Вся история сохраняется.</div>
+      <div class="lb-rule">lead.converted_to_client_id = clients.id</div>
+    </div>
+    <div class="logic-box">
+      <div class="lb-icon">💜</div>
+      <div class="lb-title">Купил закрытый клуб</div>
+      <div class="lb-body">Не вошёл в активную работу, но купил доступ в клуб. Статус → <code>club_member</code>. Остаётся в воронке как тёплый, напоминания продолжаются с учётом интереса к клубу.</div>
+      <div class="lb-rule">Периодические напоминания о связи сохраняются</div>
+    </div>
+    <div class="logic-box">
+      <div class="lb-icon">❌</div>
+      <div class="lb-title">Отказался / не отвечает</div>
+      <div class="lb-body">После БД пропал — не отвечает. Статус → <code>refused</code>. Уведомления прекращаются. Запись сохраняется в истории.</div>
+      <div class="lb-rule">Уведомления по refused не отправляются</div>
+    </div>
+    <div class="logic-box">
+      <div class="lb-icon">🔔</div>
+      <div class="lb-title">Напоминание о контакте</div>
+      <div class="lb-body">Для статусов <code>new</code>, <code>warm</code>, <code>negotiations</code>, <code>club_member</code>: если прошло <code>remind_after_days</code> с <code>last_contact_at</code> — напоминание. Default: 7 дней.</div>
+      <div class="lb-rule">Каждое напоминание содержит кнопку «Написала» — обновляет last_contact_at</div>
+    </div>
+    <div class="logic-box">
+      <div class="lb-icon">⚠️</div>
+      <div class="lb-title">Давно без контакта</div>
+      <div class="lb-body">Автоматический триггер: если <code>last_contact_at</code> старше 14 дней и статус не <code>refused</code> — лид помечается «требует внимания» и попадает в дайджест.</div>
+      <div class="lb-rule">Визуальный индикатор в списке лидов</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ 7. УВЕДОМЛЕНИЯ ═══ -->
+<section id="notifications">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">07 — Система уведомлений</div>
+    <h2 class="sec-h">11 триггеров — <em>полная логика</em></h2>
+    <p class="sec-desc">Все уведомления идут в личку владельца в Telegram. Расписание: Пн–Пт, 10:00 (Europe/Kyiv). Каждое сообщение содержит кнопки быстрых действий.</p>
+  </div>
+
+  <div class="callout callout-green reveal">
+    <strong>Планировщик (Scheduler):</strong> Запускается ежедневно в 10:00 Пн–Пт. Проверяет все условия ниже и отправляет накопленные уведомления. Порядок отправки: сначала ДР → созвоны → дедлайны задач → оплаты → лиды → дайджест. Если сегодня суббота или воскресенье — не запускается.
+  </div>
+
+  <div class="notif-grid reveal" style="margin-top:32px">
+
+    <!-- 1. ДР -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">🎂 День рождения клиента</div><span class="nc-type nct-client">Клиент</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">Сегодня совпадает с birth_date клиента (день и месяц). Приоритет — отправляется первым.</div>
+        <div class="nc-msg"><strong>🎂 День рождения!</strong><br>Сегодня день рождения <strong>Анна Коваль</strong><br>🎯 Цель: снижение веса · Тип: индивидуальное<br><span style="font-size:11px;color:var(--text3)">Не забудьте поздравить клиента ✨</span></div>
+        <div class="nc-btns"><button class="nc-btn primary">Открыть карточку</button><button class="nc-btn">Написать поздравление</button></div>
+        <div class="nc-schedule">Отправляется: день в день, 10:00, вне зависимости от дня недели</div>
+      </div>
+    </div>
+
+    <!-- 2. Созвон завтра -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">📞 Созвон завтра</div><span class="nc-type nct-client">Клиент</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">calls.scheduled_at = завтра. Для всех типов created, тип: intro / monthly / extra.</div>
+        <div class="nc-msg"><strong>📞 Созвон завтра</strong><br><strong>Марина Семко</strong> · Индивидуальное сопровождение<br>🕐 Завтра в <strong>15:00</strong> · Google Meet<br>Тип: плановый (конец 1-го месяца)</div>
+        <div class="nc-btns"><button class="nc-btn primary">Карточка клиента</button><button class="nc-btn">Отменить</button><button class="nc-btn">Перенести</button></div>
+        <div class="nc-schedule">За 1 день до scheduled_at в 10:00</div>
+      </div>
+    </div>
+
+    <!-- 3. Диагностика завтра -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">🔍 Диагностика лида завтра</div><span class="nc-type nct-lead">Лид</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">calls.call_type = free_diagnostic, scheduled_at = завтра, lead_id IS NOT NULL.</div>
+        <div class="nc-msg"><strong>🔍 Бесплатная диагностика завтра</strong><br><strong>Ольга Левченко</strong> (лид)<br>🕐 Завтра в <strong>11:00</strong> · 30 минут · Zoom<br>Интерес: снижение веса после родов</div>
+        <div class="nc-btns"><button class="nc-btn primary">Карточка лида</button><button class="nc-btn">Перенести</button></div>
+        <div class="nc-schedule">За 1 день до созвона в 10:00</div>
+      </div>
+    </div>
+
+    <!-- 4. Дедлайн задачи -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">🔴 Дедлайн задачи приближается</div><span class="nc-type nct-client">Клиент</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">tasks.deadline_date - TODAY() = tasks.remind_days_before. Каждая задача имеет своё значение remind_days_before (по умолчанию 1).</div>
+        <div class="nc-msg"><strong>🔴 Дедлайн через <em>[N] дн.</em></strong><br><strong>Анна Коваль</strong><br>📋 Составить рацион на 2-й месяц<br>📅 Дедлайн: <strong>25 марта</strong></div>
+        <div class="nc-btns"><button class="nc-btn primary">Открыть задачу</button><button class="nc-btn">Перенести дедлайн</button><button class="nc-btn">Выполнено ✓</button></div>
+        <div class="nc-schedule">За N дней (remind_days_before задачи) в 10:00</div>
+      </div>
+    </div>
+
+    <!-- 5. Просрочка задачи -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">⚠️ Задача просрочена</div><span class="nc-type nct-client">Клиент</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">tasks.deadline_date < TODAY() AND tasks.status IN ('pending','in_progress'). Статус задачи автоматически → overdue.</div>
+        <div class="nc-msg"><strong>⚠️ Задача просрочена</strong><br><strong>Ірина Бойко</strong><br>📋 Замеры и корректировка плана<br>📅 Дедлайн был: <strong>18 марта</strong> (просрочено <strong>4 дня</strong>)</div>
+        <div class="nc-btns"><button class="nc-btn primary">Открыть задачу</button><button class="nc-btn">Новый дедлайн</button><button class="nc-btn">Закрыть</button></div>
+        <div class="nc-schedule">В день просрочки и повторно через 3 дня если не закрыта</div>
+      </div>
+    </div>
+
+    <!-- 6. Оплата через 2 дня -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">💳 Платёж послезавтра</div><span class="nc-type nct-finance">Финансы</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">payments.next_payment_date - TODAY() = 2. Предупреждение за 2 дня.</div>
+        <div class="nc-msg"><strong>💳 Платёж послезавтра</strong><br><strong>Марина Семко</strong><br>💰 Ожидается: <strong>5 000 ₴</strong><br>📅 Дата: <strong>24 марта</strong><br>Оплачено: 3 000 из 10 000 ₴</div>
+        <div class="nc-btns"><button class="nc-btn primary">Карточка клиента</button><button class="nc-btn">Внести оплату</button></div>
+        <div class="nc-schedule">За 2 дня до next_payment_date в 10:00</div>
+      </div>
+    </div>
+
+    <!-- 7. Дата платежа -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">💰 Дата платежа сегодня</div><span class="nc-type nct-finance">Финансы</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">payments.next_payment_date = TODAY(). Напоминание в день ожидаемого платежа.</div>
+        <div class="nc-msg"><strong>💰 Сегодня ожидается платёж</strong><br><strong>Ірина Бойко</strong><br>💵 Сумма: <strong>4 000 ₴</strong><br>Остаток после оплаты: 2 000 ₴</div>
+        <div class="nc-btns"><button class="nc-btn primary">Внести оплату</button><button class="nc-btn">Карточка</button><button class="nc-btn">Перенести</button></div>
+        <div class="nc-schedule">В день next_payment_date в 10:00</div>
+      </div>
+    </div>
+
+    <!-- 8. Не доплатил -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">💸 Клиент не доплатил</div><span class="nc-type nct-finance">Финансы</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">TODAY() - payments.next_payment_date = payments.overdue_days_threshold (default: 2). Платёж не внесён (paid_amount < total_amount).</div>
+        <div class="nc-msg"><strong>💸 Клиент не доплатил</strong><br><strong>Олег Литвин</strong><br>Долг: <strong>7 000 ₴</strong><br>📅 Дедлайн был: <strong>20 марта</strong> (просрочено <strong>2 дня</strong>)<br>Оплачено: 3 000 из 10 000 ₴</div>
+        <div class="nc-btns"><button class="nc-btn primary">Внести оплату</button><button class="nc-btn">Карточка</button><button class="nc-btn">Отложить</button></div>
+        <div class="nc-schedule">Через overdue_days_threshold дней после next_payment_date (default: 2 дня)</div>
+      </div>
+    </div>
+
+    <!-- 9. Напомнить о лиде -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">👋 Напомнить о лиде</div><span class="nc-type nct-lead">Лид</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">TODAY() - leads.last_contact_at >= leads.remind_after_days (default: 7). Статус: new / warm / negotiations / club_member.</div>
+        <div class="nc-msg"><strong>👋 Время написать лиду</strong><br><strong>Ольга Левченко</strong> · тёплый лид<br>Последний контакт: <strong>12 дней назад</strong><br>Интерес: снижение веса после родов<br><span style="font-size:11px;color:var(--text3)">Источник: рекомендация Анны Коваль</span></div>
+        <div class="nc-btns"><button class="nc-btn primary">Написала ✓</button><button class="nc-btn">Стала клиентом</button><button class="nc-btn">Отказалась</button><button class="nc-btn">Клуб</button></div>
+        <div class="nc-schedule">Каждые remind_after_days дней (default: 7)</div>
+      </div>
+    </div>
+
+    <!-- 10. Утренний дайджест -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">🌿 Утренний дайджест</div><span class="nc-type nct-system">Система</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">Отправляется каждый рабочий день в 10:00. Собирает все события дня одним сообщением.</div>
+        <div class="nc-msg"><strong>🌿 Доброе утро! Сводка на сегодня:</strong><br><br>📞 <strong>1 созвон</strong> — Марина, 15:00<br>🎂 <strong>День рождения</strong> — Анна Коваль<br>🔴 <strong>1 дедлайн</strong> — Ірина (завтра)<br>💰 <strong>1 платёж</strong> ожидается сегодня<br>👋 <strong>2 лида</strong> ждут контакта<br><br><span style="font-size:11px;color:var(--text3)">Пн, 22 марта · 8 активных клиентов</span></div>
+        <div class="nc-btns"><button class="nc-btn primary">Открыть Mini App</button><button class="nc-btn">Лиды</button><button class="nc-btn">Задачи</button></div>
+        <div class="nc-schedule">Пн–Пт, 10:00. Только если есть хотя бы одно событие</div>
+      </div>
+    </div>
+
+    <!-- 11. Конец курса -->
+    <div class="notif-card">
+      <div class="nc-head"><div class="nc-title">📅 Курс заканчивается</div><span class="nc-type nct-client">Клиент</span></div>
+      <div class="nc-body">
+        <div class="nc-trigger">clients.end_date - TODAY() = 7 (за неделю). Для типов с фиксированным сроком.</div>
+        <div class="nc-msg"><strong>📅 Курс заканчивается через 7 дней</strong><br><strong>Анна Коваль</strong> · Индивидуальное сопровождение<br>📅 Окончание: <strong>1 апреля</strong><br>Напомните клиенту о продлении или переходе на схему</div>
+        <div class="nc-btns"><button class="nc-btn primary">Карточка</button><button class="nc-btn">Продлить</button><button class="nc-btn">→ Схема 3м</button></div>
+        <div class="nc-schedule">За 7 дней до end_date в 10:00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings table -->
+  <div class="reveal" style="margin-top:48px">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Таблица настроек уведомлений</div>
+    <table class="spec-table">
+      <thead><tr><th>Уведомление</th><th>Триггер</th><th>Настройка</th><th>По умолчанию</th><th>Отключаемо</th></tr></thead>
+      <tbody>
+        <tr><td>🎂 День рождения</td><td>birth_date = сегодня</td><td>—</td><td>включено</td><td>Да</td></tr>
+        <tr><td>📞 Созвон завтра (клиент)</td><td>scheduled_at = завтра</td><td>—</td><td>включено</td><td>Нет</td></tr>
+        <tr><td>🔍 Диагностика завтра (лид)</td><td>scheduled_at = завтра</td><td>—</td><td>включено</td><td>Нет</td></tr>
+        <tr><td>🔴 Дедлайн задачи</td><td>deadline - today = remind_days_before</td><td>Per task: remind_days_before (1–14)</td><td>1 день</td><td>Нет (только срок)</td></tr>
+        <tr><td>⚠️ Задача просрочена</td><td>deadline < today, статус не done</td><td>—</td><td>включено</td><td>Да</td></tr>
+        <tr><td>💳 Платёж послезавтра</td><td>next_payment_date - today = 2</td><td>—</td><td>включено</td><td>Да</td></tr>
+        <tr><td>💰 Платёж сегодня</td><td>next_payment_date = today</td><td>—</td><td>включено</td><td>Нет</td></tr>
+        <tr><td>💸 Не доплатил</td><td>today - next_payment_date = threshold</td><td>Per payment: overdue_days_threshold (1–30)</td><td>2 дня</td><td>Да</td></tr>
+        <tr><td>👋 Напомнить о лиде</td><td>last_contact_at + remind_after_days ≤ today</td><td>Per lead: remind_after_days (1–30)</td><td>7 дней</td><td>Да</td></tr>
+        <tr><td>📅 Курс заканчивается</td><td>end_date - today = 7</td><td>—</td><td>включено</td><td>Да</td></tr>
+        <tr><td>🌿 Дайджест</td><td>Пн–Пт 10:00</td><td>Время (по умолчанию 10:00)</td><td>включено</td><td>Да</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ═══ 8. ДИЗАЙН ═══ -->
+<section id="design">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">08 — Дизайн-система</div>
+    <h2 class="sec-h">Визуальный язык <em>интерфейса</em></h2>
+    <p class="sec-desc">Принципы, цвета, типографика и паттерны UI для Telegram Mini App. Дизайн адаптируется под тему Telegram (светлая / тёмная).</p>
+  </div>
+
+  <div class="col-grid reveal">
+    <div>
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Цветовая палитра</div>
+      <div class="tokens-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="token-card"><div class="token-swatch" style="background:#4E7A5A"></div><div class="token-info"><div class="token-name">--leaf (primary)</div><div class="token-hex">#4E7A5A · Акцент, кнопки</div></div></div>
+        <div class="token-card"><div class="token-swatch" style="background:#C8973C"></div><div class="token-info"><div class="token-name">--gold (warning)</div><div class="token-hex">#C8973C · Оплаты, долги</div></div></div>
+        <div class="token-card"><div class="token-swatch" style="background:#5B8DD4"></div><div class="token-info"><div class="token-name">--blue (info)</div><div class="token-hex">#5B8DD4 · Лиды, созвоны</div></div></div>
+        <div class="token-card"><div class="token-swatch" style="background:#C45A5A"></div><div class="token-info"><div class="token-name">--red (danger)</div><div class="token-hex">#C45A5A · Просрочки, долги</div></div></div>
+        <div class="token-card"><div class="token-swatch" style="background:#F5F0E8"></div><div class="token-info"><div class="token-name">--warm (surface)</div><div class="token-hex">#F5F0E8 · Фон карточек</div></div></div>
+        <div class="token-card"><div class="token-swatch" style="background:#141918"></div><div class="token-info"><div class="token-name">--ink (text)</div><div class="token-hex">#141918 · Основной текст</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Типографика</div>
+      <div class="code-block">
+        <div class="code-header"><div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div><div class="code-title">typography.css</div></div>
+        <div class="code-body">
+<span class="cc">/* Display / заголовки */</span><br>
+<span class="ck">--font-display</span>: <span class="cv">'Fraunces'</span>, serif;<br>
+<span class="cc">/* Цели, имена секций, большие числа */</span><br><br>
+<span class="cc">/* UI / интерфейс */</span><br>
+<span class="ck">--font-ui</span>: <span class="cv">'DM Sans'</span>, sans-serif;<br>
+<span class="cc">/* Кнопки, лейблы, метаданные */</span><br><br>
+<span class="cc">/* Размеры */</span><br>
+<span class="ck">--text-xl</span>: <span class="cn">20px</span>; <span class="cc">/* Имя клиента */</span><br>
+<span class="ck">--text-lg</span>: <span class="cn">16px</span>; <span class="cc">/* Основной контент */</span><br>
+<span class="ck">--text-md</span>: <span class="cn">14px</span>; <span class="cc">/* Карточки */</span><br>
+<span class="ck">--text-sm</span>: <span class="cn">12px</span>; <span class="cc">/* Мета, чипы */</span><br>
+<span class="ck">--text-xs</span>: <span class="cn">10px</span>; <span class="cc">/* Бейджи, теги */</span>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Принципы UI</div>
+      <ul class="spec-list">
+        <li>Навигация — 3 главных таба: Клиенты / Задачи / Лиды. Нижняя панель (tab bar).</li>
+        <li>Карточки клиентов — список с прогресс-баром оплаты и чипами статусов</li>
+        <li>Карточка клиента — скролл: основное → оплаты → задачи → созвоны → заметки</li>
+        <li>Статусные бейджи цветом: зелёный (активен), жёлтый (внимание), красный (просрочка)</li>
+        <li>Кнопки действий — крупные, thumb-friendly (min 44px высота)</li>
+        <li>Тёмная тема — автоматически через Telegram.colorScheme</li>
+        <li>Быстрое добавление — FAB кнопка (+ клиент / + лид / + задача)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Screen structure -->
+  <div class="reveal" style="margin-top:40px">
+    <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Структура экранов Mini App</div>
+    <div class="col-grid-3">
+      <div class="screen-wrap">
+        <div class="screen-bar"><div class="screen-dot" style="background:#C45A5A"></div><div class="screen-dot" style="background:#C8973C"></div><div class="screen-dot" style="background:#4CAF72"></div><div class="screen-title">Список клиентов</div></div>
+        <div class="screen-body">
+          <ul class="spec-list tight">
+            <li>Поиск по имени/фамилии</li>
+            <li>Фильтр по типу работы</li>
+            <li>Сортировка (дата, ДР, оплата)</li>
+            <li>Карточка: аватар, имя, тип, прогресс оплаты, ближайшее событие</li>
+            <li>Бейдж статуса (активен / долг / просрочка)</li>
+            <li>FAB: + добавить клиента</li>
+          </ul>
+        </div>
+      </div>
+      <div class="screen-wrap">
+        <div class="screen-bar"><div class="screen-dot" style="background:#C45A5A"></div><div class="screen-dot" style="background:#C8973C"></div><div class="screen-dot" style="background:#4CAF72"></div><div class="screen-title">Карточка клиента</div></div>
+        <div class="screen-body">
+          <ul class="spec-list tight">
+            <li>Шапка: имя, фамилия, тип работы, статус</li>
+            <li>ДР + иконка торта если сегодня</li>
+            <li>Блок оплаты: прогресс-бар, история, следующий платёж</li>
+            <li>Блок задач: список с дедлайнами и remind_days_before</li>
+            <li>Блок созвонов: следующий + история</li>
+            <li>Заметки (textarea)</li>
+            <li>Кнопки: Редактировать · Добавить задачу · Добавить созвон · Внести оплату</li>
+          </ul>
+        </div>
+      </div>
+      <div class="screen-wrap">
+        <div class="screen-bar"><div class="screen-dot" style="background:#C45A5A"></div><div class="screen-dot" style="background:#C8973C"></div><div class="screen-dot" style="background:#4CAF72"></div><div class="screen-title">Модуль Лиды</div></div>
+        <div class="screen-body">
+          <ul class="spec-list tight">
+            <li>Вкладки: Все / Тёплые / Без контакта 14д+</li>
+            <li>Карточка лида: имя, статус, дней без контакта, источник</li>
+            <li>Индикатор «давно без контакта» (красная точка)</li>
+            <li>Карточка: имя, интерес, история контактов, созвон-диагностика</li>
+            <li>Кнопки: Написала · → Клиент · Отказалась · Клуб</li>
+            <li>FAB: + добавить лида</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ 9. РОАДМАП ═══ -->
+<section id="roadmap">
+<div class="page">
+  <div class="sec-header reveal">
+    <div class="sec-num">09 — Роадмап разработки</div>
+    <h2 class="sec-h">MVP → <em>Релиз</em> → Развитие</h2>
+    <p class="sec-desc">Поэтапный план разработки с приоритетами. MVP — рабочая система через 2–3 недели.</p>
+  </div>
+
+  <div class="col-grid reveal">
+    <div>
+      <div class="timeline">
+        <div class="tl-item done">
+          <div class="tl-month">Неделя 1</div>
+          <div class="tl-title">Backend + БД</div>
+          <div class="tl-desc">Настройка PostgreSQL, все таблицы по ТЗ. REST API: CRUD клиентов, лидов, задач, оплат, созвонов. JWT авторизация по Telegram ID.</div>
+          <div class="tl-tags"><span class="tl-tag">PostgreSQL</span><span class="tl-tag">Fastify</span><span class="tl-tag">REST API</span></div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-month">Неделя 2</div>
+          <div class="tl-title">Бот + Scheduler</div>
+          <div class="tl-desc">Telegram бот: /start, авторизация, кнопка открытия Mini App. Планировщик: все 11 типов уведомлений, Пн–Пт 10:00.</div>
+          <div class="tl-tags"><span class="tl-tag">node-cron</span><span class="tl-tag">Bot API</span><span class="tl-tag">Notifications</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-month">Неделя 3</div>
+          <div class="tl-title">Mini App Frontend</div>
+          <div class="tl-desc">React + Vite + Telegram WebApp SDK. Экраны: клиенты, карточка, лиды, задачи. Базовый дизайн по системе.</div>
+          <div class="tl-tags"><span class="tl-tag">React</span><span class="tl-tag">TG SDK</span><span class="tl-tag">MVP UI</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-month">Неделя 4</div>
+          <div class="tl-title">Полировка + Деплой</div>
+          <div class="tl-desc">Тестирование на реальных данных. Деплой на Railway/Render. Настройка webhook. Передача нутрициологу для теста.</div>
+          <div class="tl-tags"><span class="tl-tag">Railway</span><span class="tl-tag">Testing</span><span class="tl-tag">Release</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Приоритеты MVP (Must Have)</div>
+      <table class="spec-table">
+        <thead><tr><th>Фича</th><th>Приоритет</th></tr></thead>
+        <tbody>
+          <tr><td>CRUD клиентов (все поля по ТЗ)</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Тип работы + логика созвонов</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Оплаты + история транзакций</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Задачи + remind_days_before</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Созвоны (все типы)</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Модуль лидов + воронка</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Все 11 типов уведомлений</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Расписание Пн–Пт 10:00</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Бесплатная диагностика (лид)</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Конвертация лид → клиент</td><td><span class="td-tag tdt-r">P0</span></td></tr>
+          <tr><td>Утренний дайджест</td><td><span class="td-tag tdt-o">P1</span></td></tr>
+          <tr><td>Настройки уведомлений в Mini App</td><td><span class="td-tag tdt-o">P1</span></td></tr>
+          <tr><td>Уведомление о конце курса (7д)</td><td><span class="td-tag tdt-o">P1</span></td></tr>
+          <tr><td>История платежей в карточке</td><td><span class="td-tag tdt-o">P1</span></td></tr>
+          <tr><td>Поиск и фильтры по клиентам</td><td><span class="td-tag tdt-g">P2</span></td></tr>
+          <tr><td>Аналитика (доход, воронка)</td><td><span class="td-tag tdt-g">P2</span></td></tr>
+          <tr><td>Экспорт клиентов в CSV</td><td><span class="td-tag tdt-g">P2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout callout-green reveal" style="margin-top:32px">
+    <strong>Принцип разработки:</strong> Поля в карточке клиента — расширяемые. Новые поля добавляются через миграцию БД без переделки UI (dynamic form). Типы уведомлений регистрируются как отдельные обработчики в планировщике — новые добавляются без изменения ядра системы.
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<div style="border-top:1px solid var(--line);padding:48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap">
+  <div>
+    <div style="font-family:var(--f-serif);font-size:18px;color:var(--green);font-style:italic;margin-bottom:4px">NutriBot CRM</div>
+    <div style="font-size:11px;color:var(--text3)">Техническое задание v1.0 · 2025</div>
+  </div>
+  <div style="font-size:11px;color:var(--text3);text-align:right">
+    Документ подготовлен для передачи<br>команде разработки
+  </div>
+</div>
+
+<script>
+// scroll progress
+window.addEventListener('scroll',()=>{
+  const prog = document.getElementById('prog');
+  const h = document.documentElement;
+  const pct = (h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+  prog.style.width = pct+'%';
+});
+
+// nav active
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if(active) active.classList.add('active');
+    }
+  });
+},{threshold:0.3});
+sections.forEach(s=>io.observe(s));
+
+// reveal
+const ro = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting) setTimeout(()=>e.target.classList.add('show'),0);
+  });
+},{threshold:0.08});
+document.querySelectorAll('.reveal,.reveal-l').forEach(el=>ro.observe(el));
+
+// nc-btn interactions (demo)
+document.querySelectorAll('.nc-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.borderColor='';btn.style.color='';},1200);
+  });
+});
+
+// type pills demo
+document.querySelectorAll('.type-pill').forEach(p=>{
+  p.addEventListener('click',()=>{
+    p.classList.toggle('sel');
+  });
+});
+</script>
+</body>
+</html>

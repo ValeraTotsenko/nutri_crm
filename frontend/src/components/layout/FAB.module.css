@@ -1,0 +1,20 @@
+.fab {
+  position: fixed;
+  bottom: calc(var(--tabbar-h) + 16px);
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--leaf);
+  color: white;
+  border: none;
+  box-shadow: var(--sh-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.fab:active { transform: scale(0.93); }
+.icon { font-size: 28px; line-height: 1; }

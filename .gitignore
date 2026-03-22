@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.npm
+
+# Environment
+.env
+*.local
+
+# Build
+dist/
+build/
+
+# Backups (не коммитим бэкапы)
+backups/*.sql.gz
+backups/*.sql
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.override.yml
+
+# SSL certificates
+nginx/certs/

@@ -1,0 +1,31 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 var(--sp-md);
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--text-md);
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.fullWidth { width: 100%; }
+
+/* Variants */
+.primary { background: var(--leaf); color: white; }
+.primary:hover { background: var(--leaf-light); }
+.secondary { background: var(--surface); color: var(--leaf); border: 1.5px solid var(--leaf); }
+.danger { background: var(--red-pale); color: var(--red); border: 1.5px solid var(--red); }
+.ghost { background: transparent; color: var(--mid); border: 1.5px solid var(--border); }
+.gold { background: var(--gold-pale); color: var(--gold); border: 1.5px solid var(--gold); }
+
+/* Sizes */
+.sm { min-height: 36px; padding: 0 var(--sp-sm); font-size: var(--text-sm); }
+.lg { min-height: 52px; padding: 0 var(--sp-xl); font-size: var(--text-lg); }
