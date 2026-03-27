@@ -106,9 +106,7 @@ echo -e "│  Токен:    ${BOT_TOKEN:0:8}..."
 echo -e "│  Папка:    ${INSTALL_DIR}"
 echo -e "└─────────────────────────────────────────┘"
 echo ""
-echo -n "Всё верно? Начать установку? (y/N): "
-read -r CONFIRM </dev/tty || { echo ""; CONFIRM="y"; }
-[[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]] && { echo "Отменено."; exit 0; }
+ok "Параметры приняты — начинаем установку..."
 
 # ============================================================
 header "Шаг 2: Системные зависимости"
@@ -162,9 +160,7 @@ if [ "$SERVER_IP" != "$DOMAIN_IP" ] && [ -n "$DOMAIN_IP" ]; then
   warn "IP сервера: ${SERVER_IP}"
   warn "IP домена:  ${DOMAIN_IP}"
   warn "Домен не указывает на этот сервер. DNS мог ещё не обновиться (до 24ч)."
-  echo -n "  Продолжить всё равно? (y/N): "
-  read -r DNS_CONFIRM </dev/tty
-  [[ "$DNS_CONFIRM" != "y" && "$DNS_CONFIRM" != "Y" ]] && err "Сначала настрой DNS запись A: ${DOMAIN} → ${SERVER_IP}"
+  warn "Продолжаем — убедись что A-запись настроена: ${DOMAIN} → ${SERVER_IP}"
 elif [ -z "$DOMAIN_IP" ]; then
   warn "Не удалось проверить DNS. Убедись что A-запись настроена: ${DOMAIN} → ${SERVER_IP}"
 else
