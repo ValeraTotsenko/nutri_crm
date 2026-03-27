@@ -113,7 +113,10 @@ ok "DOMAIN:             ${DOMAIN}"
 # Пароль БД — генерируем автоматически (или берём существующий)
 EXISTING_PASS=$(get_env "POSTGRES_PASSWORD")
 if [ -z "$EXISTING_PASS" ] || echo "$EXISTING_PASS" | grep -q "CHANGE_ME"; then
+  # set +o pipefail чтобы SIGPIPE от head не убил скрипт
+  set +o pipefail
   DB_PASS=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 24)
+  set -o pipefail
 else
   DB_PASS="$EXISTING_PASS"
 fi
