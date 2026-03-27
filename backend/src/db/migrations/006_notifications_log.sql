@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS notifications_log (
 CREATE INDEX idx_notifications_log_type_entity ON notifications_log(type, entity_id);
 CREATE INDEX idx_notifications_log_sent_at ON notifications_log(sent_at);
 -- Индекс для быстрой проверки дедупликации (отправляли ли сегодня)
-CREATE INDEX idx_notifications_log_today ON notifications_log(type, entity_id, sent_at)
-  WHERE sent_at >= CURRENT_DATE;
+CREATE INDEX idx_notifications_log_today ON notifications_log(type, entity_id, sent_at);
 
 COMMIT;
