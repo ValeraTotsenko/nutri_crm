@@ -69,8 +69,14 @@ fi
 
 # ── Читаем параметры из .env ──────────────────────────────
 ok "Читаем конфиг из ${ENV_FILE}"
-# shellcheck disable=SC2046
-export $(grep -v '^#' "$ENV_FILE" | grep -v '^$' | xargs)
+while IFS='=' read -r key value; do
+  [[ "$key" =~ ^[[:space:]]*# ]] && continue
+  [[ -z "${key// }" ]] && continue
+  key="${key%%[[:space:]]*}"
+  key="${key//$'\r'/}"
+  value="${value//$'\r'/}"
+  export "$key=$value"
+done < "$ENV_FILE"
 
 [ -z "${BOT_TOKEN:-}" ]         && err "В ${ENV_FILE} не заполнен BOT_TOKEN"
 [ -z "${OWNER_TELEGRAM_ID:-}" ] && err "В ${ENV_FILE} не заполнен OWNER_TELEGRAM_ID"
