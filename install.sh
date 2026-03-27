@@ -303,15 +303,15 @@ step "Шаг 7/8: Сборка и запуск"
 info "Собираем frontend..."
 if command -v node &>/dev/null; then
   cd "${INSTALL_DIR}/frontend"
-  npm ci --silent
-  VITE_API_URL=/api npm run build --silent
+  npm install --silent
+  VITE_API_URL=/api npm run build
   cd "${INSTALL_DIR}"
 else
   docker run --rm \
     -v "${INSTALL_DIR}/frontend:/app" \
     -w /app \
     node:20-alpine \
-    sh -c "npm ci --silent && VITE_API_URL=/api npm run build --silent"
+    sh -c "npm install --silent && VITE_API_URL=/api npm run build"
 fi
 ok "Frontend собран → frontend/dist/"
 
