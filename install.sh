@@ -69,7 +69,13 @@ fi
 
 # ── Читаем параметры из .env ──────────────────────────────
 ok "Читаем конфиг из ${ENV_FILE}"
-get_env() { grep "^${1}=" "$ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '\r\n'; }
+# || true защищает от set -e если grep ничего не нашёл
+get_env() { grep "^${1}=" "$ENV_FILE" 2>/dev/null | head -1 | cut -d'=' -f2- | tr -d '\r\n' || true; }
+
+echo "  [debug] строк в .env: $(wc -l < "$ENV_FILE")"
+echo "  [debug] BOT_TOKEN строка:         $(grep "^BOT_TOKEN=" "$ENV_FILE" || echo '(не найдена)')"
+echo "  [debug] OWNER_TELEGRAM_ID строка: $(grep "^OWNER_TELEGRAM_ID=" "$ENV_FILE" || echo '(не найдена)')"
+echo "  [debug] WEBAPP_URL строка:        $(grep "^WEBAPP_URL=" "$ENV_FILE" || echo '(не найдена)')"
 
 BOT_TOKEN=$(get_env "BOT_TOKEN")
 OWNER_TELEGRAM_ID=$(get_env "OWNER_TELEGRAM_ID")
