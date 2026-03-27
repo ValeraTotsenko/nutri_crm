@@ -61,19 +61,16 @@ else
 fi
 
 if ! docker compose version &>/dev/null 2>&1; then
-  info "Устанавливаем Docker Compose plugin..."
-  # Пробуем через apt (работает если настроен Docker repo)
-  if ! apt-get install -y -qq docker-compose-plugin 2>/dev/null; then
-    # Fallback: скачиваем бинарник напрямую
-    info "apt не нашёл плагин, скачиваем бинарник..."
-    COMPOSE_VER=$(curl -s https://api.github.com/repos/docker/compose/releases/latest \
-      | grep '"tag_name"' | cut -d'"' -f4)
-    curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VER}/docker-compose-linux-x86_64" \
-      -o /usr/local/lib/docker/cli-plugins/docker-compose
-    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-  fi
+  info "Docker Compose не найден, устанавливаем..."
+  mkdir -p /usr/local/lib/docker/cli-plugins
+  COMPOSE_VER=$(curl -fsSL https://api.github.com/repos/docker/compose/releases/latest \
+    | grep '"tag_name"' | head -1 | cut -d'"' -f4)
+  curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VER}/docker-compose-linux-x86_64" \
+    -o /usr/local/lib/docker/cli-plugins/docker-compose
+  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 fi
-ok "Docker Compose $(docker compose version --short 2>/dev/null || echo 'ok')"
+docker compose version &>/dev/null 2>&1 || err "Docker Compose не установился. Проверь интернет соединение."
+ok "Docker Compose $(docker compose version --short 2>/dev/null)"
 
 # =============================================================
 step "Шаг 3/8: Репозиторий"
