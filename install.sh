@@ -36,37 +36,56 @@ INSTALL_DIR="/opt/nutricrm"
 REPO_URL="https://github.com/ValeraTotsenko/nutri_crm.git"
 
 # ============================================================
-header "Шаг 1: Введи данные"
+header "Шаг 1: Параметры"
 # ============================================================
 
-echo -e "${BOLD}Нужно всего 3 параметра:${N}\n"
+CONFIG_FILE="/opt/nutricrm-install.conf"
 
-# BOT_TOKEN
-echo -e "${Y}[1/3] Telegram Bot Token${N}"
-echo -e "    Получи у @BotFather: /newbot → скопируй токен"
-echo -n "    Токен: "
-read -r BOT_TOKEN </dev/tty
-[ -z "$BOT_TOKEN" ] && err "BOT_TOKEN не может быть пустым"
+if [ -f "$CONFIG_FILE" ]; then
+  # ── Читаем из файла конфига ──────────────────────────────
+  ok "Найден файл конфига: ${CONFIG_FILE}"
+  # shellcheck disable=SC1090
+  source "$CONFIG_FILE"
+  [ -z "${BOT_TOKEN:-}" ]          && err "В конфиге не хватает BOT_TOKEN"
+  [ -z "${OWNER_TELEGRAM_ID:-}" ]  && err "В конфиге не хватает OWNER_TELEGRAM_ID"
+  [ -z "${DOMAIN:-}" ]             && err "В конфиге не хватает DOMAIN"
+  info "BOT_TOKEN:          ${BOT_TOKEN:0:8}..."
+  info "OWNER_TELEGRAM_ID:  ${OWNER_TELEGRAM_ID}"
+  info "DOMAIN:             ${DOMAIN}"
+else
+  # ── Интерактивный ввод ───────────────────────────────────
+  echo -e "${BOLD}Нужно всего 3 параметра:${N}\n"
+  echo -e "  ${Y}Совет:${N} можно создать файл конфига и запустить без вопросов:"
+  echo -e "  ${C}cat > ${CONFIG_FILE} << 'EOF'"
+  echo -e "BOT_TOKEN=ваш_токен"
+  echo -e "OWNER_TELEGRAM_ID=ваш_id"
+  echo -e "DOMAIN=имя.duckdns.org"
+  echo -e "EOF${N}"
+  echo -e "  Затем: ${C}curl ... | sudo bash${N}\n"
 
-# OWNER_TELEGRAM_ID
-echo ""
-echo -e "${Y}[2/3] Твой Telegram ID${N}"
-echo -e "    Напиши боту @userinfobot — он пришлёт твой ID"
-echo -n "    ID (только цифры): "
-read -r OWNER_TELEGRAM_ID </dev/tty
-[[ ! "$OWNER_TELEGRAM_ID" =~ ^[0-9]+$ ]] && err "ID должен содержать только цифры"
+  echo -e "${Y}[1/3] Telegram Bot Token${N}"
+  echo -e "    Получи у @BotFather: /newbot → скопируй токен"
+  echo -n "    Токен: "
+  read -r BOT_TOKEN </dev/tty
+  [ -z "$BOT_TOKEN" ] && err "BOT_TOKEN не может быть пустым"
 
-# DOMAIN / URL
-echo ""
-echo -e "${Y}[3/3] Домен или URL${N}"
-echo -e "    Варианты:"
-echo -e "    ${G}а)${N} Бесплатный DuckDNS → зайди на ${C}duckdns.org${N},"
-echo -e "       войди через Google/GitHub, выбери имя → получишь ${C}имя.duckdns.org${N}"
-echo -e "    ${G}б)${N} Свой домен (если есть)"
-echo -e ""
-echo -n "    Домен (без https://): "
-read -r DOMAIN </dev/tty
-[ -z "$DOMAIN" ] && err "Домен не может быть пустым"
+  echo ""
+  echo -e "${Y}[2/3] Твой Telegram ID${N}"
+  echo -e "    Напиши боту @userinfobot — он пришлёт твой ID"
+  echo -n "    ID (только цифры): "
+  read -r OWNER_TELEGRAM_ID </dev/tty
+  [[ ! "$OWNER_TELEGRAM_ID" =~ ^[0-9]+$ ]] && err "ID должен содержать только цифры"
+
+  echo ""
+  echo -e "${Y}[3/3] Домен${N}"
+  echo -e "    ${G}а)${N} Бесплатный: зайди на ${C}duckdns.org${N} → получишь ${C}имя.duckdns.org${N}"
+  echo -e "    ${G}б)${N} Свой домен (если есть)"
+  echo -e ""
+  echo -n "    Домен (без https://): "
+  read -r DOMAIN </dev/tty
+  [ -z "$DOMAIN" ] && err "Домен не может быть пустым"
+fi
+
 DOMAIN="${DOMAIN#https://}"
 DOMAIN="${DOMAIN#http://}"
 DOMAIN="${DOMAIN%/}"
@@ -87,7 +106,7 @@ echo -e "│  Папка:    ${INSTALL_DIR}"
 echo -e "└─────────────────────────────────────────┘"
 echo ""
 echo -n "Всё верно? Начать установку? (y/N): "
-read -r CONFIRM </dev/tty
+read -r CONFIRM </dev/tty || { echo ""; CONFIRM="y"; }
 [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]] && { echo "Отменено."; exit 0; }
 
 # ============================================================
