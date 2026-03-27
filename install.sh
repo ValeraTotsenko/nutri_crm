@@ -74,12 +74,18 @@ fi
 
 dbg "Файл .env найден ($(wc -l < "$ENV_FILE") строк)"
 
-# Читаем конкретные переменные через grep — надёжнее любого парсера
+# Читаем переменную: сначала из окружения, потом из .env файла
 get_env() {
+  local key="$1"
+  # Если переменная уже задана в окружении — используем её
+  local env_val="${!key:-}"
+  if [ -n "$env_val" ]; then
+    echo "$env_val"
+    return
+  fi
+  # Иначе — читаем из файла, вырезаем всё после первого =, убираем \r и пробелы
   local val
-  val=$(grep -m1 "^${1}=" "$ENV_FILE" 2>/dev/null || true)
-  val="${val#*=}"       # убираем KEY=
-  val="${val//$'\r'/}"  # убираем \r (CRLF)
+  val=$(grep -m1 "^${key}=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2- | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' || true)
   echo "$val"
 }
 
