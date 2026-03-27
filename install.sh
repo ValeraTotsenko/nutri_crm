@@ -39,52 +39,50 @@ REPO_URL="https://github.com/ValeraTotsenko/nutri_crm.git"
 header "Шаг 1: Параметры"
 # ============================================================
 
-CONFIG_FILE="/opt/nutricrm-install.conf"
+ENV_FILE="${INSTALL_DIR}/.env"
 
-if [ -f "$CONFIG_FILE" ]; then
-  # ── Читаем из файла конфига ──────────────────────────────
-  ok "Найден файл конфига: ${CONFIG_FILE}"
-  # shellcheck disable=SC1090
-  source "$CONFIG_FILE"
-  [ -z "${BOT_TOKEN:-}" ]          && err "В конфиге не хватает BOT_TOKEN"
-  [ -z "${OWNER_TELEGRAM_ID:-}" ]  && err "В конфиге не хватает OWNER_TELEGRAM_ID"
-  [ -z "${DOMAIN:-}" ]             && err "В конфиге не хватает DOMAIN"
-  info "BOT_TOKEN:          ${BOT_TOKEN:0:8}..."
-  info "OWNER_TELEGRAM_ID:  ${OWNER_TELEGRAM_ID}"
-  info "DOMAIN:             ${DOMAIN}"
+# ── Клонируем репо заранее, чтобы .env был доступен ──────
+if [ ! -d "${INSTALL_DIR}/.git" ]; then
+  info "Клонируем репозиторий в ${INSTALL_DIR}..."
+  git clone -q "$REPO_URL" "$INSTALL_DIR"
+  ok "Репозиторий склонирован"
 else
-  # ── Интерактивный ввод ───────────────────────────────────
-  echo -e "${BOLD}Нужно всего 3 параметра:${N}\n"
-  echo -e "  ${Y}Совет:${N} можно создать файл конфига и запустить без вопросов:"
-  echo -e "  ${C}cat > ${CONFIG_FILE} << 'EOF'"
-  echo -e "BOT_TOKEN=ваш_токен"
-  echo -e "OWNER_TELEGRAM_ID=ваш_id"
-  echo -e "DOMAIN=имя.duckdns.org"
-  echo -e "EOF${N}"
-  echo -e "  Затем: ${C}curl ... | sudo bash${N}\n"
-
-  echo -e "${Y}[1/3] Telegram Bot Token${N}"
-  echo -e "    Получи у @BotFather: /newbot → скопируй токен"
-  echo -n "    Токен: "
-  read -r BOT_TOKEN </dev/tty
-  [ -z "$BOT_TOKEN" ] && err "BOT_TOKEN не может быть пустым"
-
-  echo ""
-  echo -e "${Y}[2/3] Твой Telegram ID${N}"
-  echo -e "    Напиши боту @userinfobot — он пришлёт твой ID"
-  echo -n "    ID (только цифры): "
-  read -r OWNER_TELEGRAM_ID </dev/tty
-  [[ ! "$OWNER_TELEGRAM_ID" =~ ^[0-9]+$ ]] && err "ID должен содержать только цифры"
-
-  echo ""
-  echo -e "${Y}[3/3] Домен${N}"
-  echo -e "    ${G}а)${N} Бесплатный: зайди на ${C}duckdns.org${N} → получишь ${C}имя.duckdns.org${N}"
-  echo -e "    ${G}б)${N} Свой домен (если есть)"
-  echo -e ""
-  echo -n "    Домен (без https://): "
-  read -r DOMAIN </dev/tty
-  [ -z "$DOMAIN" ] && err "Домен не может быть пустым"
+  ok "Репозиторий уже существует, обновляем..."
+  git -C "$INSTALL_DIR" pull -q
 fi
+
+# ── Создаём .env из примера если его нет ─────────────────
+if [ ! -f "$ENV_FILE" ]; then
+  cp "${INSTALL_DIR}/.env.example" "$ENV_FILE"
+  warn "Создан ${ENV_FILE} из примера — заполни его и перезапусти скрипт"
+  echo ""
+  echo -e "  Открой файл:  ${C}nano ${ENV_FILE}${N}"
+  echo -e "  Заполни:"
+  echo -e "    ${Y}BOT_TOKEN${N}=токен_от_BotFather"
+  echo -e "    ${Y}OWNER_TELEGRAM_ID${N}=твой_числовой_id"
+  echo -e "    ${Y}WEBAPP_URL${N}=https://имя.duckdns.org"
+  echo ""
+  echo -e "  После сохранения запусти снова:"
+  echo -e "  ${C}curl -fsSL https://raw.githubusercontent.com/ValeraTotsenko/nutri_crm/master/install.sh | sudo bash${N}"
+  exit 0
+fi
+
+# ── Читаем параметры из .env ──────────────────────────────
+ok "Читаем конфиг из ${ENV_FILE}"
+# shellcheck disable=SC2046
+export $(grep -v '^#' "$ENV_FILE" | grep -v '^$' | xargs)
+
+[ -z "${BOT_TOKEN:-}" ]         && err "В ${ENV_FILE} не заполнен BOT_TOKEN"
+[ -z "${OWNER_TELEGRAM_ID:-}" ] && err "В ${ENV_FILE} не заполнен OWNER_TELEGRAM_ID"
+[ -z "${WEBAPP_URL:-}" ]        && err "В ${ENV_FILE} не заполнен WEBAPP_URL"
+
+DOMAIN="${WEBAPP_URL#https://}"
+DOMAIN="${DOMAIN#http://}"
+DOMAIN="${DOMAIN%/}"
+
+info "BOT_TOKEN:          ${BOT_TOKEN:0:8}..."
+info "OWNER_TELEGRAM_ID:  ${OWNER_TELEGRAM_ID}"
+info "DOMAIN:             ${DOMAIN}"
 
 DOMAIN="${DOMAIN#https://}"
 DOMAIN="${DOMAIN#http://}"
@@ -193,13 +191,6 @@ fi
 header "Шаг 4: Установка проекта"
 # ============================================================
 
-if [ -d "$INSTALL_DIR" ]; then
-  info "Директория уже существует, обновляем..."
-  cd "$INSTALL_DIR" && git pull -q
-else
-  info "Клонируем репозиторий в ${INSTALL_DIR}..."
-  git clone -q "$REPO_URL" "$INSTALL_DIR"
-fi
 cd "$INSTALL_DIR"
 ok "Репозиторий готов"
 
@@ -207,41 +198,35 @@ ok "Репозиторий готов"
 header "Шаг 5: Конфигурация"
 # ============================================================
 
-# .env
-info "Создаём .env..."
-cat > "${INSTALL_DIR}/.env" << EOF
-# =============================================
-# NutriBot CRM — автоматически сгенерировано
-# $(date '+%Y-%m-%d %H:%M:%S')
-# =============================================
+# Дописываем в .env недостающие поля (пароль БД, defaults)
+info "Дополняем .env нужными полями..."
 
-# База данных
-POSTGRES_DB=nutricrm
-POSTGRES_USER=nutricrm
-POSTGRES_PASSWORD=${DB_PASS}
-DATABASE_URL=postgresql://nutricrm:${DB_PASS}@postgres:5432/nutricrm
+# Добавляем только если строк ещё нет
+add_if_missing() {
+  local key="$1" val="$2"
+  grep -q "^${key}=" "$ENV_FILE" || echo "${key}=${val}" >> "$ENV_FILE"
+}
 
-# Telegram
-BOT_TOKEN=${BOT_TOKEN}
-OWNER_TELEGRAM_ID=${OWNER_TELEGRAM_ID}
-WEBAPP_URL=${WEBAPP_URL}
+# Заменяем CHANGE_ME пароль на сгенерированный
+if grep -q "CHANGE_ME" "$ENV_FILE"; then
+  sed -i "s/CHANGE_ME_STRONG_PASSWORD_HERE/${DB_PASS}/g" "$ENV_FILE"
+fi
 
-# Backend
-PORT=3000
-NODE_ENV=production
-TZ=Europe/Kyiv
+add_if_missing "POSTGRES_DB"        "nutricrm"
+add_if_missing "POSTGRES_USER"      "nutricrm"
+add_if_missing "POSTGRES_PASSWORD"  "${DB_PASS}"
+add_if_missing "DATABASE_URL"       "postgresql://nutricrm:${DB_PASS}@postgres:5432/nutricrm"
+add_if_missing "PORT"               "3000"
+add_if_missing "NODE_ENV"           "production"
+add_if_missing "TZ"                 "Europe/Kyiv"
+add_if_missing "NOTIFICATIONS_HOUR" "10"
+add_if_missing "NOTIFICATIONS_TZ"   "Europe/Kyiv"
+add_if_missing "BACKUP_KEEP_DAYS"   "30"
+add_if_missing "BACKUP_SSH_USER"    "root"
+add_if_missing "BACKUP_SSH_HOST"    "${SERVER_IP}"
+add_if_missing "BACKUP_REMOTE_PATH" "/opt/nutricrm/backups"
 
-# Уведомления
-NOTIFICATIONS_HOUR=10
-NOTIFICATIONS_TZ=Europe/Kyiv
-
-# Backup
-BACKUP_KEEP_DAYS=30
-BACKUP_SSH_USER=root
-BACKUP_SSH_HOST=${SERVER_IP}
-BACKUP_REMOTE_PATH=/opt/nutricrm/backups
-EOF
-ok ".env создан (пароль БД сгенерирован автоматически)"
+ok ".env готов"
 
 # Сертификаты → папка nginx
 info "Копируем SSL сертификаты..."
