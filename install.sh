@@ -69,18 +69,15 @@ fi
 
 # ── Читаем параметры из .env ──────────────────────────────
 ok "Читаем конфиг из ${ENV_FILE}"
-while IFS='=' read -r key value; do
-  [[ "$key" =~ ^[[:space:]]*# ]] && continue
-  [[ -z "${key// }" ]] && continue
-  key="${key%%[[:space:]]*}"
-  key="${key//$'\r'/}"
-  value="${value//$'\r'/}"
-  export "$key=$value"
-done < "$ENV_FILE"
+get_env() { grep "^${1}=" "$ENV_FILE" | head -1 | cut -d'=' -f2- | tr -d '\r\n'; }
 
-[ -z "${BOT_TOKEN:-}" ]         && err "В ${ENV_FILE} не заполнен BOT_TOKEN"
-[ -z "${OWNER_TELEGRAM_ID:-}" ] && err "В ${ENV_FILE} не заполнен OWNER_TELEGRAM_ID"
-[ -z "${WEBAPP_URL:-}" ]        && err "В ${ENV_FILE} не заполнен WEBAPP_URL"
+BOT_TOKEN=$(get_env "BOT_TOKEN")
+OWNER_TELEGRAM_ID=$(get_env "OWNER_TELEGRAM_ID")
+WEBAPP_URL=$(get_env "WEBAPP_URL")
+
+[ -z "$BOT_TOKEN" ]         && err "В ${ENV_FILE} не заполнен BOT_TOKEN"
+[ -z "$OWNER_TELEGRAM_ID" ] && err "В ${ENV_FILE} не заполнен OWNER_TELEGRAM_ID"
+[ -z "$WEBAPP_URL" ]        && err "В ${ENV_FILE} не заполнен WEBAPP_URL"
 
 DOMAIN="${WEBAPP_URL#https://}"
 DOMAIN="${DOMAIN#http://}"
